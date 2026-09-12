@@ -20,6 +20,7 @@ import { Loader2, FileSpreadsheet, FileText, Search } from "lucide-react";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { saveXlsx, savePdfArrayBuffer, saveCsvText } from "@/lib/fileSave";
 
 type KasView = {
   id: number;
@@ -139,7 +140,7 @@ export function Laporan() {
     ws["!cols"] = [{ wch: 4 }, { wch: 12 }, { wch: 10 }, { wch: 16 }, { wch: 28 }, { wch: 18 }, { wch: 16 }];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Laporan");
-    XLSX.writeFile(wb, `laporan-kas-${dari}_sd_${sampai}.xlsx`);
+    await saveXlsx(wb, `laporan-kas-${dari}_sd_${sampai}.xlsx`);
   };
 
   const exportPDF = async () => {
@@ -265,10 +266,11 @@ export function Laporan() {
       }
     }
 
-    doc.save(`laporan-kas-${dari}_sd_${sampai}.pdf`);
+    const pdfBuf = doc.output("arraybuffer") as ArrayBuffer;
+    await savePdfArrayBuffer(pdfBuf, `laporan-kas-${dari}_sd_${sampai}.pdf`);
   };
 
-  const exportCSV = () => {
+  const exportCSV = async () => {
     const header =
       "tanggal,tipe,kategori,keterangan,penanggung_jawab,nominal\n";
     const rows = data
@@ -277,13 +279,7 @@ export function Laporan() {
           `${d.tanggal},${d.tipe},"${d.kategori_nama ?? ""}","${d.keterangan.replace(/"/g, '""')}","${(d.penanggung_jawab ?? "").replace(/"/g, '""')}",${d.nominal}`,
       )
       .join("\n");
-    const blob = new Blob([header + rows], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `laporan-kas-${dari}_sd_${sampai}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    await saveCsvText(header + rows, `laporan-kas-${dari}_sd_${sampai}.csv`);
   };
 
   return (
@@ -487,7 +483,7 @@ export function Laporan() {
             <DialogContent className="max-w-2xl">
               <DialogHeader><DialogTitle>Bukti Transaksi</DialogTitle></DialogHeader>
               {buktiView && <div className="flex justify-center bg-muted p-2 rounded">{buktiView.startsWith("data:application/pdf") ? <iframe src={buktiView} className="w-full h-[70vh] rounded border" title="bukti" /> : <img src={buktiView} alt="bukti besar" className="max-h-[70vh] max-w-full object-contain rounded border" />}</div>}
-              <div className="flex justify-end"><Button variant="outline" size="sm" onClick={() => setBuktiView(null)}>Tutup</Button></div>
+              <div className="flex justify-end gap-2">{buktiView && <Button variant="outline" size="sm" onClick={() => { import("@/lib/fileSave").then(m => m.saveDataUrl(buktiView!, `bukti-laporan-${Date.now()}`)); }}>Unduh</Button>}<Button variant="outline" size="sm" onClick={() => setBuktiView(null)}>Tutup</Button></div>
             </DialogContent>
           </Dialog>
         </CardContent>

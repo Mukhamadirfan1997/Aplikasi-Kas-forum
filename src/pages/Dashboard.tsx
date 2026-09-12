@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { formatRupiah } from "@/lib/utils";
+import { PaginationControls } from "@/components/ui/pagination-controls";
 import {
   Wallet,
   TrendingUp,
@@ -63,6 +64,8 @@ export function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [_error, setError] = useState<string | null>(null);
   void _error;
+  const [tPage, setTPage] = useState(1);
+  const [tPageSize, setTPageSize] = useState(10);
 
   const fetch = async () => {
     setLoading(true);
@@ -154,6 +157,9 @@ export function Dashboard() {
   useEffect(() => {
     fetch();
   }, []);
+  useEffect(() => { setTPage(1); }, [tunggakan.length, tPageSize]);
+  const tTotalPages = Math.max(1, Math.ceil(tunggakan.length / tPageSize));
+  const tPaged = tunggakan.slice((tPage - 1) * tPageSize, tPage * tPageSize);
 
   if (loading)
     return (
@@ -344,7 +350,7 @@ export function Dashboard() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {tunggakan.slice(0, 15).map((t) => (
+                  {tPaged.map((t) => (
                     <TableRow key={t.id}>
                       <TableCell className="font-medium">{t.nama}</TableCell>
                       <TableCell>{t.unit_kerja}</TableCell>
@@ -352,9 +358,9 @@ export function Dashboard() {
                   ))}
                 </TableBody>
               </Table>
-              {tunggakan.length > 15 && (
-                <div className="text-xs text-muted-foreground p-2 text-center">
-                  +{tunggakan.length - 15} lainnya
+              {tunggakan.length > tPageSize && (
+                <div className="mt-2">
+                  <PaginationControls page={tPage} totalPages={tTotalPages} totalItems={tunggakan.length} pageSize={tPageSize} onPageChange={setTPage} onPageSizeChange={(s) => { setTPageSize(s); setTPage(1); }} />
                 </div>
               )}
             </div>

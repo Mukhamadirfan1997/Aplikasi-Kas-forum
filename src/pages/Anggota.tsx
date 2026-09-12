@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Search, Plus, Pencil, UserX, Users, Loader2, RefreshCw, Upload, Download } from "lucide-react";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import * as XLSX from "xlsx";
+import { saveXlsx } from "@/lib/fileSave";
 
 type Anggota = {
   id: number;
@@ -244,7 +245,7 @@ export function Anggota() {
     }
   };
 
-  const downloadTemplate = () => {
+  const downloadTemplate = async () => {
     const ws = XLSX.utils.aoa_to_sheet([
       ["Nama", "NIP/NUPTK", "Unit Kerja", "No HP"],
       ["Budi Santoso", "198001012010011001", "SDN 1 Rejoso", "08123456789"],
@@ -253,7 +254,7 @@ export function Anggota() {
     ws["!cols"] = [{ wch: 20 }, { wch: 20 }, { wch: 18 }, { wch: 15 }];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Anggota");
-    XLSX.writeFile(wb, "template-anggota.xlsx");
+    await saveXlsx(wb, "template-anggota.xlsx");
   };
 
   const onImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {

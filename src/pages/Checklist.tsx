@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Printer, Download, RefreshCw, Loader2 } from "lucide-react";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import * as XLSX from "xlsx";
+import { saveXlsx } from "@/lib/fileSave";
 
 type CheckRow = {
   id: number;
@@ -199,18 +200,35 @@ export function Checklist() {
       </div>
     </body></html>`;
 
-    const win = window.open("", "_blank", "width=1120,height=780");
-    if (!win) {
-      alert("Popup diblokir. Harap izinkan popup untuk mencetak.");
+    // Tauri WebView blokir window.open — pakai iframe hidden (work di browser & Tauri)
+    const iframe = document.createElement("iframe");
+    iframe.style.position = "fixed";
+    iframe.style.right = "0";
+    iframe.style.bottom = "0";
+    iframe.style.width = "0";
+    iframe.style.height = "0";
+    iframe.style.border = "0";
+    document.body.appendChild(iframe);
+    const iDoc = iframe.contentWindow?.document;
+    if (!iDoc) {
+      // fallback ekstrem: simpan HTML via dialog
+      try {
+        const { save } = await import("@tauri-apps/plugin-dialog");
+        const { writeTextFile } = await import("@tauri-apps/plugin-fs");
+        const p = await save({ defaultPath: `daftar-iuran-${tahun}.html`, filters: [{ name: "HTML", extensions: ["html"] }] });
+        if (p) { await writeTextFile(p, html); alert(`HTML disimpan di ${p} — buka di browser lalu Cetak (Ctrl+P).`); }
+      } catch { alert("Gagal membuka cetak. Coba lagi."); }
+      iframe.remove();
       return;
     }
-    win.document.write(html);
-    win.document.close();
-    win.focus();
+    iDoc.open();
+    iDoc.write(html);
+    iDoc.close();
     setTimeout(() => {
-      win.print();
-      win.close();
-    }, 500);
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      setTimeout(() => iframe.remove(), 1000);
+    }, 300);
   };
 
   // ── EXPORT EXCEL ──
@@ -257,7 +275,7 @@ export function Checklist() {
     ];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, `Iuran ${tahun}`);
-    XLSX.writeFile(wb, `daftar-iuran-${tahun}.xlsx`);
+    await saveXlsx(wb, `daftar-iuran-${tahun}.xlsx`);
   };
 
   return (

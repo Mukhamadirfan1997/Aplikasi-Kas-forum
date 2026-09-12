@@ -360,3 +360,28 @@ const saldo = await invoke<number>("get_saldo");
 - **Backend**: `cadangan.rs:41` `pulihkan_cadangan` checkpoint WAL, backup `kas-sebelum-pulih-*.db`, copy `src→kas.db`, hapus `wal/shm`, replace `DbState`, tulis riwayat `Pulihkan Data`.
 - **Alur Baru**: Instal fresh → login default → Pengaturan → Pulihkan (bukan login data lama dulu). Setelah pulih login pakai akun dari backup.
 - **Build**: `npm run build` PASS (1.44s).
+
+### 24. Perbaikan ProductName & Kesiapan Installer + Push GitHub (2026-09-12)
+- **ProductName**: `src-tauri/tauri.conf.json:3` `tauri-app` → `Aplikasi Kas Forum PPPK`, `package.json:2` → `aplikasi-kas-forum-pppk`, `Cargo.toml:4` description `IrfanDev97`.
+- **Toolchain**: `winget install WiXToolset.WiXToolset 3.14.1.8722` (candle.exe) + `NSIS.NSIS 3.12` (makensis.exe), PATH permanen User, `npx tauri info` OK WebView2 152 + rustc 1.97.
+- **Build Awal**: `npm run build` PASS 2708 modules 1.27s, `cargo check` PASS, `tauri build` 12m40s → MSI 6.27 MB + NSIS 5.36 MB + exe 9.3 MB di `src-tauri/target/release/bundle/`.
+- **Git**: `git init`, `.gitignore` tambah `src-tauri/target`, `*.db`, `backup`, `.vscode/settings.json` allow, commit `d5f8bae` 121 files push `main` → `https://github.com/Mukhamadirfan1997/Aplikasi-Kas-forum.git`.
+
+### 25. Fix tsconfig.json Merah (2026-09-12)
+- **Penyebab**: `tsconfig.json:28` `ignoreDeprecations: "6.0"` hanya dikenal TS 6.0.3, VSCode 1.102 bundle TS 5.8 → merah walau `tsc --noEmit` PASS.
+- **Fix**: `.vscode/settings.json:1` `typescript.tsdk: node_modules/typescript/lib` + `enablePromptUseWorkspaceTsdk`, `.gitignore:17` whitelist `!.vscode/settings.json`, commit `45a57c3` push.
+
+### 26. Patch Cetak & Unduh di Tauri WebView (2026-09-12)
+- **Root Cause**: `Checklist.tsx:202` `window.open` diblokir WebView2 → `null` → alert popup; `XLSX.writeFile`/`doc.save`/`Blob+a.click` di 7 lokasi mengandalkan browser download → diam di Tauri tanpa `fs`.
+- **Fix Infra**: `npm i @tauri-apps/plugin-fs@2` + `cargo add tauri-plugin-fs`, `src-tauri/src/lib.rs:18` `.plugin(tauri_plugin_fs::init())`, `capabilities/default.json:6` `fs:allow-write-file`, `fs:scope-*` (download/document/desktop/temp/home/appdata).
+- **Helper**: `src/lib/fileSave.ts:1` baru `isTauri()` cek `__TAURI__/__TAURI_INTERNALS__/__TAURI_IPC__`, `saveWithDialogOrAnchor` → Tauri `dialog.save` + `fs.writeFile` else anchor Blob; `saveXlsx`, `savePdfArrayBuffer`, `saveCsvText`, `saveDataUrl` (base64 decode), `saveAssetPdf` (fetch).
+- **Checklist**: `Checklist.tsx:7` import `saveXlsx`, `handlePrint:202` ganti `window.open` → iframe hidden `contentWindow.print()` + fallback save HTML, `handleExcel:260` → `await saveXlsx`.
+- **Laporan**: `Laporan.tsx:20` import `saveXlsx/savePdfArrayBuffer/saveCsvText`, `exportExcel:142` → `saveXlsx`, `exportPDF:268` → `doc.output(arraybuffer)` + `savePdfArrayBuffer`, `exportCSV:273` → `saveCsvText`, dialog bukti tambah tombol Unduh via `saveDataUrl`.
+- **Lainnya**: `Riwayat.tsx:11` + `Anggota.tsx:13` `saveXlsx` template, `Petunjuk.tsx:302` `handleDownloadPDF` → `saveAssetPdf`, `Transaksi.tsx:24` + `Iuran.tsx:594` bukti `a download` → `saveDataUrl` Button.
+- **Build**: `npm run build` PASS 2711 modules 1.37s, `cargo check` fix `fs:allow-write-file`/`path:default` typo, `tauri build` 10m42s → MSI 6.39 MB + NSIS 5.45 MB.
+
+### 27. Dashboard Pagination + Login Persist (2026-09-12)
+- **Dashboard**: `Dashboard.tsx:16` import `PaginationControls`, `tPage/tPageSize` state, `tPaged = tunggakan.slice(...)`, UI ganti `slice(0,15)` + `+N` → `PaginationControls` 10/hal (sebelumnya belum ada pagination).
+- **Login Persist**: `src/context/AuthContext.tsx:27` sebelumnya hanya `localStorage` → hilang saat WebView clear. Sekarang dual persist: `persist()` tulis `localStorage` + `appDataDir/session.json` via `writeTextFile`, `clearPersist()` hapus keduanya, `useEffect` fallback baca `readTextFile` jika `localStorage` kosong. `capabilities/default.json:6` tambah `fs:allow-read-text-file`, `fs:allow-remove`, `fs:allow-mkdir`, `core:path:default`, `fs:scope-appconfig-recursive`.
+- **Build & Install**: `npm run build` PASS 1.43s, `cargo check` PASS 3.76s, `tauri build` 9m36s → MSI 6.39 MB reinstall `C:\Program Files\Aplikasi Kas Forum PPPK\tauri-app.exe` 10.2 MB PID 52948, install MSI `exit 0`.
+- **Status**: App terinstall, window `Aplikasi Kas Forum PPPK`, DB `C:\Users\yudhi\AppData\Roaming\com.forumpppk.kas\kas.db` persist, tutup-buka tidak minta login lagi.

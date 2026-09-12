@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { saveAssetPdf } from "@/lib/fileSave";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   LayoutDashboard,
@@ -299,14 +300,11 @@ export function Petunjuk() {
   const toggleFaq = (i: number) =>
     setOpenFaq((prev) => (prev === i ? null : i));
 
-  const handleDownloadPDF = () => {
-    const link = document.createElement("a");
-    link.href = "/Panduan_Penggunaan_Aplikasi_Kas_Forum_PPPK.pdf";
-    link.download = "Panduan_Penggunaan_Aplikasi_Kas_Forum_PPPK.pdf";
-    link.target = "_blank";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownloadPDF = async () => {
+    await saveAssetPdf(
+      "/Panduan_Penggunaan_Aplikasi_Kas_Forum_PPPK.pdf",
+      "Panduan_Penggunaan_Aplikasi_Kas_Forum_PPPK.pdf"
+    );
   };
 
   return (

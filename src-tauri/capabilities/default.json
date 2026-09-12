@@ -3,5 +3,5 @@
   "identifier": "default",
   "description": "Capability for the main window",
   "windows": ["main"],
-  "permissions": ["core:default", "opener:default", "dialog:default"]
+  "permissions": ["core:default", "core:path:default", "opener:default", "dialog:default", "fs:default", "fs:allow-write-file", "fs:allow-write-text-file", "fs:allow-read-text-file", "fs:allow-read-file", "fs:allow-exists", "fs:allow-remove", "fs:allow-mkdir", "dialog:allow-save", "dialog:allow-open", "fs:scope-download-recursive", "fs:scope-document-recursive", "fs:scope-desktop-recursive", "fs:scope-temp-recursive", "fs:scope-home-recursive", "fs:scope-appdata-recursive", "fs:scope-appdata", "fs:scope-appconfig-recursive"]
 }

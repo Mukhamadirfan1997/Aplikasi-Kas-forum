@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { formatRupiah } from "@/lib/utils";
+import { saveDataUrl } from "@/lib/fileSave";
 import {
   Loader2,
   Plus,
@@ -515,7 +516,7 @@ export function Transaksi() {
             </div>
           )}
           <div className="flex justify-end gap-2">
-            {buktiView && <a href={buktiView} download="bukti" className="text-xs underline">Unduh</a>}
+            {buktiView && <Button variant="outline" size="sm" onClick={() => saveDataUrl(buktiView, `bukti-${Date.now()}`)}>Unduh</Button>}
             <Button variant="outline" size="sm" onClick={() => setBuktiView(null)}>Tutup</Button>
           </div>
         </DialogContent>

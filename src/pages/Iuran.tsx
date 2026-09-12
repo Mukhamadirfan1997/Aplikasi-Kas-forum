@@ -594,7 +594,7 @@ export function Iuran() {
                       {buktiView.startsWith("data:application/pdf") ? <iframe src={buktiView} className="w-full h-[70vh] rounded border" title="bukti" /> : <img src={buktiView} alt="bukti besar" className="max-h-[70vh] max-w-full object-contain rounded border" />}
                     </div>
                   )}
-                  <div className="flex justify-end gap-2"><Button variant="outline" size="sm" onClick={() => setBuktiView(null)}>Tutup</Button></div>
+                  <div className="flex justify-end gap-2">{buktiView && <Button variant="outline" size="sm" onClick={() => { import("@/lib/fileSave").then(m => m.saveDataUrl(buktiView!, `bukti-iuran-${Date.now()}`)); }}>Unduh</Button>}<Button variant="outline" size="sm" onClick={() => setBuktiView(null)}>Tutup</Button></div>
                 </DialogContent>
               </Dialog>
             </CardContent>
