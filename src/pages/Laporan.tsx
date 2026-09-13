@@ -21,6 +21,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { saveXlsx, savePdfArrayBuffer, saveCsvText } from "@/lib/fileSave";
+import { laporanFileName } from "@/lib/fileName";
 
 type KasView = {
   id: number;
@@ -140,7 +141,7 @@ export function Laporan() {
     ws["!cols"] = [{ wch: 4 }, { wch: 12 }, { wch: 10 }, { wch: 16 }, { wch: 28 }, { wch: 18 }, { wch: 16 }];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Laporan");
-    await saveXlsx(wb, `laporan-kas-${dari}_sd_${sampai}.xlsx`);
+    await saveXlsx(wb, laporanFileName(namaForum, dari, sampai, tipe, "xlsx"));
   };
 
   const exportPDF = async () => {
@@ -267,7 +268,7 @@ export function Laporan() {
     }
 
     const pdfBuf = doc.output("arraybuffer") as ArrayBuffer;
-    await savePdfArrayBuffer(pdfBuf, `laporan-kas-${dari}_sd_${sampai}.pdf`);
+    await savePdfArrayBuffer(pdfBuf, laporanFileName(namaForum, dari, sampai, tipe, "pdf"));
   };
 
   const exportCSV = async () => {
@@ -279,7 +280,9 @@ export function Laporan() {
           `${d.tanggal},${d.tipe},"${d.kategori_nama ?? ""}","${d.keterangan.replace(/"/g, '""')}","${(d.penanggung_jawab ?? "").replace(/"/g, '""')}",${d.nominal}`,
       )
       .join("\n");
-    await saveCsvText(header + rows, `laporan-kas-${dari}_sd_${sampai}.csv`);
+    const profil = await fetchProfil();
+    const namaForum = profil?.nama_forum || "Forum PPPK";
+    await saveCsvText(header + rows, laporanFileName(namaForum, dari, sampai, tipe, "csv"));
   };
 
   return (

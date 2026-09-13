@@ -70,6 +70,13 @@ export function Iuran() {
   };
 
   useEffect(() => {
+    // load nominal default dari profil agar 10k→20k otomatis tanpa ubah kode
+    (async () => {
+      try {
+        const p: any = await invoke("get_profil");
+        if (p?.nominal_default) setNominalEdit(String(p.nominal_default));
+      } catch {}
+    })();
     fetchPeriodeList();
     // auto buka periode bulan berjalan supaya daftar nama langsung terlihat
     openPeriode();

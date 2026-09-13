@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Loader2, Search, Trash2, Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import { saveXlsx } from "@/lib/fileSave";
+import { riwayatFileName } from "@/lib/fileName";
 
 type Riwayat = { id: number; waktu: string; username: string; aksi: string; detail: string | null };
 
@@ -45,9 +46,11 @@ export function Riwayat() {
   useEffect(() => { fetch(); }, []);
 
   const exportExcel = async () => {
+    let namaForum: string | null = null;
+    try { const p: any = await invoke("get_profil"); namaForum = p?.nama_forum ?? null; } catch {}
     const rows = data.map((d) => ({ Waktu: d.waktu, Pengguna: d.username, Kegiatan: d.aksi, Rincian: d.detail ?? "-" }));
     const ws = XLSX.utils.json_to_sheet(rows);
-    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Riwayat"); await saveXlsx(wb, `riwayat-${new Date().toISOString().slice(0,10)}.xlsx`);
+    const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Riwayat"); await saveXlsx(wb, riwayatFileName(namaForum));
   };
   const hapusLama = async () => {
     if (!confirm("Hapus riwayat lebih dari 6 bulan?")) return;

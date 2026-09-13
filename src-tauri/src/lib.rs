@@ -35,6 +35,7 @@ pub fn run() {
             commands::auth::create_user,
             commands::auth::delete_user,
             commands::auth::change_password,
+            commands::auth::update_user,
             commands::iuran::get_periode_list,
             commands::iuran::get_or_create_periode,
             commands::iuran::update_periode_nominal,

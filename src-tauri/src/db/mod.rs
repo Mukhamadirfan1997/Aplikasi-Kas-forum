@@ -38,6 +38,7 @@ pub fn init_db(app_handle: &tauri::AppHandle) -> Result<Connection, String> {
     let _ = conn.execute("ALTER TABLE profil_organisasi ADD COLUMN bendahara_nama TEXT DEFAULT ''", []);
     let _ = conn.execute("ALTER TABLE profil_organisasi ADD COLUMN bendahara_nip TEXT DEFAULT ''", []);
     let _ = conn.execute("ALTER TABLE profil_organisasi ADD COLUMN logo_base64 TEXT", []);
+    let _ = conn.execute("ALTER TABLE profil_organisasi ADD COLUMN nominal_default INTEGER NOT NULL DEFAULT 10000", []);
     // tabel riwayat untuk audit 6 bulan
     let _ = conn.execute_batch(
         "CREATE TABLE IF NOT EXISTS riwayat_kegiatan (id INTEGER PRIMARY KEY AUTOINCREMENT, waktu TEXT NOT NULL DEFAULT (datetime('now')), username TEXT NOT NULL, aksi TEXT NOT NULL, detail TEXT);",

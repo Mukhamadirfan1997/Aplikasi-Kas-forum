@@ -28,6 +28,13 @@ pub fn get_periode_list(state: State<DbState>) -> Result<Vec<PeriodeIuran>, Stri
     Ok(out)
 }
 
+fn get_default_nominal(conn: &rusqlite::Connection) -> i64 {
+    conn.query_row("SELECT COALESCE(nominal_default,10000) FROM profil_organisasi WHERE id=1", [], |r| r.get::<_, Option<i64>>(0))
+        .ok()
+        .and_then(|v| v)
+        .unwrap_or(10000)
+}
+
 #[tauri::command]
 pub fn get_or_create_periode(
     state: State<DbState>,
@@ -41,11 +48,12 @@ pub fn get_or_create_periode(
     if tahun < 2020 || tahun > 2100 {
         return Err("Tahun tidak valid".into());
     }
-    let nominal = nominal_wajib.unwrap_or(10000);
+    let conn = state.0.lock().map_err(|e| e.to_string())?;
+    let def_nominal = get_default_nominal(&conn);
+    let nominal = nominal_wajib.unwrap_or(def_nominal);
     if nominal <= 0 {
         return Err("Nominal harus > 0".into());
     }
-    let conn = state.0.lock().map_err(|e| e.to_string())?;
     // coba insert or ignore
     conn.execute(
         "INSERT OR IGNORE INTO periode_iuran (bulan, tahun, nominal_wajib) VALUES (?1, ?2, ?3)",
@@ -310,11 +318,12 @@ pub fn bayar_iuran_setahun(state: State<DbState>, input: crate::models::BayarSet
     let mut skipped: Vec<i32> = Vec::new();
     let mut failed: Vec<String> = Vec::new();
 
+    let def_nominal_setahun = get_default_nominal(&conn);
     for bulan in bulan_list {
-        // get_or_create periode
+        // get_or_create periode — pakai nominal default dari profil
         conn.execute(
-            "INSERT OR IGNORE INTO periode_iuran (bulan, tahun, nominal_wajib) VALUES (?1, ?2, 10000)",
-            params![bulan, input.tahun],
+            "INSERT OR IGNORE INTO periode_iuran (bulan, tahun, nominal_wajib) VALUES (?1, ?2, ?3)",
+            params![bulan, input.tahun, def_nominal_setahun],
         )
         .map_err(|e| e.to_string())?;
         let periode: crate::models::PeriodeIuran = {

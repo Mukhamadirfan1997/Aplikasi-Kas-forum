@@ -87,6 +87,7 @@ CREATE TABLE IF NOT EXISTS profil_organisasi (
     bendahara_nama TEXT DEFAULT '',
     bendahara_nip TEXT DEFAULT '',
     logo_base64 TEXT,
+    nominal_default INTEGER NOT NULL DEFAULT 10000,
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 INSERT OR IGNORE INTO profil_organisasi(id) VALUES(1);
@@ -97,4 +98,5 @@ INSERT OR IGNORE INTO kategori_transaksi (id, nama, tipe) VALUES (2, 'Konsumsi',
 INSERT OR IGNORE INTO kategori_transaksi (id, nama, tipe) VALUES (3, 'ATK', 'keluar');
 INSERT OR IGNORE INTO kategori_transaksi (id, nama, tipe) VALUES (4, 'Kegiatan', 'keluar');
 INSERT OR IGNORE INTO kategori_transaksi (id, nama, tipe) VALUES (5, 'Lain-lain', 'keluar');
+INSERT OR IGNORE INTO kategori_transaksi (id, nama, tipe) VALUES (6, 'Saldo Awal', 'masuk');
 "#;

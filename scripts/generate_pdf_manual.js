@@ -37,7 +37,7 @@ function addHeaderFooter(doc, pageNum, totalPages) {
   doc.setFontSize(8);
   doc.setTextColor(100, 116, 139);
   doc.text("Buku Panduan Penggunaan — Aplikasi Kas Forum PPPK", margin, 9);
-  doc.text("v0.1.0 • IrfanDev97", pageWidth - margin, 9, { align: "right" });
+  doc.text("v1.0.0 • IrfanDev97", pageWidth - margin, 9, { align: "right" });
 
   // Bottom footer line
   doc.setDrawColor(226, 232, 240);
@@ -183,8 +183,8 @@ doc.text("Informasi Rilis Dokumen:", metaLeft, metaStartY);
 
 const metaItems = [
   ["Nama Perangkat Lunak", "Aplikasi Kas Forum PPPK Desktop"],
-  ["Versi Aplikasi", "v0.1.0 (Stabil)"],
-  ["Teknologi Dasar", "Tauri 2 • Rust • React • SQLite Bundled"],
+  ["Versi Aplikasi", "v1.0.0 (Stabil)"],
+  ["Teknologi Dasar", "Aplikasi Desktop Offline • SQLite"],
   ["Pengembang Utama", "IrfanDev97"],
   ["Target Platform", "Windows 10 / 11 (64-bit Standalone)"],
   ["Konektivitas", "100% Offline & Lokal (Tanpa Internet)"],
@@ -559,19 +559,19 @@ doc.setFontSize(9);
 doc.setTextColor(DARK[0], DARK[1], DARK[2]);
 doc.text(
   [
-    "Setiap rupiah yang dikeluarkan dari kas forum wajib dicatat secara transparan:",
+    "Setiap rupiah yang dikeluarkan/dimasukkan dari kas forum wajib dicatat secara transparan:",
     "",
     "Langkah Mencatat Pengeluaran Baru:",
-    "1. Buka menu 'Kas' lalu klik tab 'Pengeluaran' (atau buka menu transaksi pengeluaran).",
-    "2. Klik tombol '+ Tambah Pengeluaran' di bagian atas.",
-    "3. Isi data pengeluaran:",
-    "   • Jenis Keperluan/Kategori: Pilih dari kategori (misal: Konsumsi Rapat, ATK, Transport, Kegiatan).",
-    "   • Tanggal Pengeluaran: Pilih tanggal transaksi.",
-    "   • Nominal: Masukkan jumlah uang keluar dalam format angka (misal: 150000).",
-    "   • Keterangan Rinci: Jelaskan keperluan belanja (misal: Pembelian snack rapat 30 porsi).",
-    "   • Penanggung Jawab: Nama pengurus atau anggota yang membelanjakan.",
-    "   • Upload Bukti/Nota*: Wajib mengunggah foto nota, kuitansi, atau struk fisik belanja.",
-    "4. Klik 'Simpan'. Saldo kas riil akan langsung berkurang.",
+    "1. Buka menu 'Kas' lalu klik tab 'Pengeluaran & Pemasukan' (atau transaksi).",
+    "2. Klik tombol '+ Tambah Pengeluaran' atau '+ Tambah Pemasukan' di bagian atas.",
+    "3. Pilih Jenis Transaksi: Masuk (sumbangan/bonus selain iuran) atau Keluar, lalu isi:",
+    "   • Jenis Keperluan/Kategori: Pilih dari kategori (buat baru di Pengaturan → Jenis Keperluan tipe Masuk/Keluar jika belum ada).",
+    "   • Tanggal: Pilih tanggal transaksi.",
+    "   • Nominal: Masukkan jumlah.",
+    "   • Keterangan Rinci: Jelaskan keperluan (mis. Sumbangan alumni, Pembelian snack rapat).",
+    "   • Penanggung Jawab: Nama pengurus (opsional).",
+    "   • Upload Bukti: Wajib untuk Keluar, opsional untuk Masuk.",
+    "4. Klik 'Simpan'. Saldo kas riil akan langsung bertambah/berkurang. Iuran tetap via tab Kas Masuk — Iuran, saldo awal via Pengaturan → Saldo Awal.",
   ],
   margin,
   curY,
@@ -648,6 +648,16 @@ doc.text(
     "• Admin dapat membuat akun baru untuk bendahara pembantu atau pengawas.",
     "• Pengguna default admin tidak boleh dihapus jika hanya tersisa satu akun.",
     "",
+    "A2. Nominal Iuran Default (10.000 → 20.000):",
+    "• Buka Pengaturan → Profil Forum → Nominal Iuran Default. Ubah 10000 jadi 20000 lalu Simpan.",
+    "• Periode/bulan BARU otomatis 20.000. Periode lama yang sudah ada pembayaran tetap 10.000 (tidak retroaktif).",
+    "• Untuk ubah bulan yang sudah ada: Iuran → pilih Bulan+Tahun → Simpan Jumlah Baru.",
+    "",
+    "A3. Saldo Awal — Sisa Buku Manual Tahun Lalu:",
+    "• Pengaturan → Saldo Awal → isi Tanggal (mis. 2024-12-31), Nominal sisa, Keterangan 'Saldo awal 2024' → Simpan.",
+    "• Tercatat sebagai kas masuk kategori Saldo Awal, langsung menambah saldo Dashboard & Laporan.",
+    "• Bisa dihapus jika salah. Tidak mengganggu data iuran.",
+    "",
     "B. Prosedur Pencadangan Data (Backup):",
     "1. Buka menu 'Pengaturan' lalu cari bagian 'Cadangan Data'.",
     "2. Klik 'Buat Cadangan Sekarang'.",
@@ -712,6 +722,14 @@ const faqs = [
     "Apakah tampilan aplikasi dapat disesuaikan di layar laptop kecil?",
     "Ya. Aplikasi telah mendukung antarmuka responsif full-width dengan sidebar fleksibel yang nyaman di layar 1366x768 hingga 1920x1080.",
   ],
+  [
+    "Sisa saldo buku manual tahun lalu dimasukkan bagaimana?",
+    'Buka Pengaturan → Saldo Awal → isi Tanggal 2024-12-31, Nominal sisa, Keterangan "Saldo awal 2024" → Simpan. Jadi kas masuk kategori Saldo Awal, langsung menambah saldo. Bisa dihapus jika salah.',
+  ],
+  [
+    "Jika nominal iuran berubah 10.000 → 20.000 apa yang terjadi?",
+    "Hanya periode/bulan baru yang 20.000. Periode lama yang sudah dibayar tetap 10.000 (tidak retroaktif). Atur Nominal Default di Pengaturan → Profil Forum.",
+  ],
 ];
 
 autoTable(doc, {
@@ -749,7 +767,7 @@ doc.text(
   curY + 14,
 );
 doc.text(
-  "Karya Pengembang: IrfanDev97 | Versi 0.1.0 | Rilis September 2026",
+  "Karya Pengembang: IrfanDev97 | Versi 1.0.0 | Rilis September 2026",
   margin + 6,
   curY + 20,
 );

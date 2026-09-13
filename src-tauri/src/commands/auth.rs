@@ -1,5 +1,5 @@
 use crate::db::DbState;
-use crate::models::{UserInput, UserPublic};
+use crate::models::{UserInput, UserPublic, UserUpdateInput};
 use rusqlite::params;
 use tauri::State;
 
@@ -133,4 +133,87 @@ pub fn change_password(state: State<DbState>, id: i64, old_password: String, new
     conn.execute("UPDATE users SET password_hash = ?1 WHERE id = ?2", params![new_hash, id])
         .map_err(|e| e.to_string())?;
     Ok("Password berhasil diubah".into())
+}
+
+#[tauri::command]
+pub fn update_user(state: State<DbState>, id: i64, input: UserUpdateInput) -> Result<UserPublic, String> {
+    let nama = input.nama.trim().to_string();
+    let username = input.username.trim().to_string();
+    let role = input.role.trim().to_string();
+    if nama.is_empty() {
+        return Err("Nama wajib diisi".into());
+    }
+    if username.len() < 3 {
+        return Err("Username minimal 3 karakter".into());
+    }
+    if !["admin", "bendahara", "viewer"].contains(&role.as_str()) {
+        return Err("Role harus admin / bendahara / viewer".into());
+    }
+    if let Some(ref pw) = input.password {
+        if !pw.trim().is_empty() && pw.trim().len() < 4 {
+            return Err("Password minimal 4 karakter".into());
+        }
+    }
+    let conn = state.0.lock().map_err(|e| e.to_string())?;
+    // cek user ada
+    let exists: i64 = conn
+        .query_row("SELECT COUNT(*) FROM users WHERE id = ?1", [id], |r| r.get(0))
+        .map_err(|e| e.to_string())?;
+    if exists == 0 {
+        return Err("User tidak ditemukan".into());
+    }
+    // cegah downgrade admin terakhir
+    if role != "admin" {
+        let current_role: String = conn
+            .query_row("SELECT role FROM users WHERE id = ?1", [id], |r| r.get(0))
+            .map_err(|e| e.to_string())?;
+        if current_role == "admin" {
+            let admin_count: i64 = conn
+                .query_row("SELECT COUNT(*) FROM users WHERE role = 'admin'", [], |r| r.get(0))
+                .map_err(|e| e.to_string())?;
+            if admin_count <= 1 {
+                return Err("Tidak bisa ubah: minimal harus ada 1 admin".into());
+            }
+        }
+    }
+    // cek username duplikat (milik orang lain)
+    let dup: i64 = conn
+        .query_row(
+            "SELECT COUNT(*) FROM users WHERE username = ?1 AND id != ?2",
+            params![username, id],
+            |r| r.get(0),
+        )
+        .map_err(|e| e.to_string())?;
+    if dup > 0 {
+        return Err("Username sudah dipakai".into());
+    }
+    // update
+    if let Some(pw) = input.password {
+        let pw_trim = pw.trim().to_string();
+        if !pw_trim.is_empty() {
+            let hash = bcrypt::hash(&pw_trim, 10).map_err(|e| e.to_string())?;
+            conn.execute(
+                "UPDATE users SET nama = ?1, username = ?2, role = ?3, password_hash = ?4 WHERE id = ?5",
+                params![nama, username, role, hash, id],
+            )
+            .map_err(|e| e.to_string())?;
+        } else {
+            conn.execute(
+                "UPDATE users SET nama = ?1, username = ?2, role = ?3 WHERE id = ?4",
+                params![nama, username, role, id],
+            )
+            .map_err(|e| e.to_string())?;
+        }
+    } else {
+        conn.execute(
+            "UPDATE users SET nama = ?1, username = ?2, role = ?3 WHERE id = ?4",
+            params![nama, username, role, id],
+        )
+        .map_err(|e| e.to_string())?;
+    }
+    let mut stmt = conn
+        .prepare("SELECT id, nama, username, role, created_at FROM users WHERE id = ?1")
+        .map_err(|e| e.to_string())?;
+    let user = stmt.query_row([id], row_to_user).map_err(|e| e.to_string())?;
+    Ok(user)
 }

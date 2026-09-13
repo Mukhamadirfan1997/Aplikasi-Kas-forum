@@ -87,6 +87,14 @@ pub struct LoginInput {
     pub password: String,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct UserUpdateInput {
+    pub nama: String,
+    pub username: String,
+    pub role: String, // admin|bendahara|viewer
+    pub password: Option<String>, // None = tidak ganti, Some = ganti (minimal 4)
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct IuranStatus {
     pub anggota: Anggota,
@@ -171,6 +179,7 @@ pub struct ProfilOrganisasi {
     pub bendahara_nama: Option<String>,
     pub bendahara_nip: Option<String>,
     pub logo_base64: Option<String>,
+    pub nominal_default: i64,
     pub updated_at: String,
 }
 
@@ -186,4 +195,5 @@ pub struct ProfilInput {
     pub bendahara_nama: Option<String>,
     pub bendahara_nip: Option<String>,
     pub logo_base64: Option<String>,
+    pub nominal_default: Option<i64>,
 }

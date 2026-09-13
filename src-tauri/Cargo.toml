@@ -1,6 +1,6 @@
 [package]
 name = "tauri-app"
-version = "0.1.0"
+version = "1.0.0"
 description = "Aplikasi Kas Forum PPPK - Manajemen kas organisasi"
 authors = ["IrfanDev97"]
 edition = "2021"

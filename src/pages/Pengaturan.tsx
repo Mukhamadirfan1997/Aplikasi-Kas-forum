@@ -25,6 +25,7 @@ import {
   Loader2,
   Plus,
   Trash2,
+  Pencil,
   Shield,
   Settings,
   Tag,
@@ -32,13 +33,15 @@ import {
   Building2,
   Image as ImageIcon,
   Save,
+  Wallet,
 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth, UserPublic } from "@/context/AuthContext";
 import { open as dialogOpen } from "@tauri-apps/plugin-dialog";
+import { formatRupiah } from "@/lib/utils";
 
 export function Pengaturan() {
-  const { user: currentUser, logout } = useAuth();
+  const { user: currentUser, logout, setUser } = useAuth();
   const [users, setUsers] = useState<UserPublic[]>([]);
   const [loading, setLoading] = useState(true);
   const [_error, setError] = useState<string | null>(null);
@@ -54,6 +57,10 @@ export function Pengaturan() {
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<UserPublic | null>(null);
+  const [editTarget, setEditTarget] = useState<UserPublic | null>(null);
+  const [editForm, setEditForm] = useState({ nama: "", username: "", role: "viewer", password: "" });
+  const [editError, setEditError] = useState<string | null>(null);
+  const [editSubmitting, setEditSubmitting] = useState(false);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -156,6 +163,42 @@ export function Pengaturan() {
     }
   };
 
+  const openEdit = (u: UserPublic) => {
+    setEditTarget(u);
+    setEditForm({ nama: u.nama, username: u.username, role: u.role, password: "" });
+    setEditError(null);
+  };
+  const handleEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editTarget) return;
+    if (!editForm.nama.trim() || !editForm.username.trim()) { setEditError("Nama dan username wajib diisi"); return; }
+    if (editForm.username.trim().length < 3) { setEditError("Username minimal 3 karakter"); return; }
+    if (editForm.password && editForm.password.length > 0 && editForm.password.length < 4) { setEditError("Password minimal 4 karakter (kosongkan jika tidak ganti)"); return; }
+    setEditSubmitting(true); setEditError(null);
+    try {
+      const updated = await invoke<UserPublic>("update_user", {
+        id: editTarget.id,
+        input: {
+          nama: editForm.nama.trim(),
+          username: editForm.username.trim(),
+          role: editForm.role,
+          password: editForm.password.trim() ? editForm.password.trim() : null,
+        },
+      });
+      setUsers((prev) => prev.map((x) => x.id === updated.id ? updated : x));
+      if (currentUser?.id === updated.id) setUser(updated);
+      setEditTarget(null);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : typeof err === "string" ? err : JSON.stringify(err);
+      if (msg.includes("invoke")) {
+        const mock: UserPublic = { ...editTarget, nama: editForm.nama.trim(), username: editForm.username.trim(), role: editForm.role };
+        setUsers((prev) => prev.map((x) => x.id === mock.id ? mock : x));
+        if (currentUser?.id === mock.id) setUser(mock);
+        setEditTarget(null);
+      } else setEditError(msg);
+    } finally { setEditSubmitting(false); }
+  };
+
   const roleBadge = (role: string) => {
     if (role === "admin") return <Badge>admin</Badge>;
     if (role === "bendahara")
@@ -230,7 +273,16 @@ export function Pengaturan() {
                       </TableCell>
                       <TableCell>@{u.username}</TableCell>
                       <TableCell>{roleBadge(u.role)}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-right space-x-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          disabled={!isAdmin && currentUser?.id !== u.id}
+                          onClick={() => openEdit(u)}
+                          title={isAdmin || currentUser?.id === u.id ? "Edit akun" : "Hanya admin / akun sendiri"}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
                         <Button
                           variant="ghost"
                           size="sm"
@@ -258,6 +310,8 @@ export function Pengaturan() {
       <ProfilForumSection isAdmin={isAdmin} />
 
       <KategoriSection isAdmin={isAdmin} />
+
+      <SaldoAwalSection isAdmin={isAdmin} />
 
       <Card>
         <CardHeader>
@@ -305,7 +359,7 @@ export function Pengaturan() {
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground space-y-1.5">
           <div>
-            Aplikasi Kas Forum PPPK &bull; Versi <strong>0.1.0</strong>
+            Aplikasi Kas Forum PPPK &bull; Versi <strong>1.0.0</strong>
           </div>
           <div>
             Pengembang: <strong className="text-slate-800">IrfanDev97</strong>
@@ -392,6 +446,48 @@ export function Pengaturan() {
                 {submitting && <Loader2 className="h-4 w-4 animate-spin" />}{" "}
                 Simpan
               </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit Akun — {editTarget?.username}</DialogTitle>
+            <DialogDescription>Ubah nama, username, jabatan, dan kata sandi (kosongkan jika tidak ganti). Nama file export otomatis tetap bisa rename saat simpan.</DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleEdit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Nama Lengkap</Label>
+              <Input value={editForm.nama} onChange={(e) => setEditForm((f) => ({ ...f, nama: e.target.value }))} placeholder="Nama lengkap" />
+            </div>
+            <div className="space-y-2">
+              <Label>Nama Pengguna</Label>
+              <Input value={editForm.username} onChange={(e) => setEditForm((f) => ({ ...f, username: e.target.value }))} placeholder="tanpa spasi, mis. bendahara1" />
+            </div>
+            <div className="space-y-2">
+              <Label>Kata Sandi Baru (opsional)</Label>
+              <Input type="password" value={editForm.password} onChange={(e) => setEditForm((f) => ({ ...f, password: e.target.value }))} placeholder="Kosongkan jika tidak ganti — min 4 karakter" />
+            </div>
+            <div className="space-y-2">
+              <Label>Jabatan</Label>
+              <select
+                value={editForm.role}
+                onChange={(e) => setEditForm((f) => ({ ...f, role: e.target.value }))}
+                disabled={!isAdmin}
+                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm disabled:opacity-50"
+              >
+                <option value="admin">Admin (kelola semua)</option>
+                <option value="bendahara">Bendahara (kelola kas)</option>
+                <option value="viewer">Hanya Lihat</option>
+              </select>
+              {!isAdmin && <p className="text-xs text-muted-foreground">Hanya admin yang bisa ubah jabatan.</p>}
+            </div>
+            {editError && <div className="text-sm text-destructive bg-destructive/10 border px-3 py-2 rounded-md">{editError}</div>}
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditTarget(null)} disabled={editSubmitting}>Batal</Button>
+              <Button type="submit" disabled={editSubmitting}>{editSubmitting && <Loader2 className="h-4 w-4 animate-spin" />} Simpan Perubahan</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -580,6 +676,7 @@ type ProfilData = {
   bendahara_nama: string | null;
   bendahara_nip: string | null;
   logo_base64: string | null;
+  nominal_default: number;
   updated_at: string;
 };
 
@@ -600,6 +697,7 @@ function ProfilForumSection({ isAdmin }: { isAdmin: boolean }) {
     bendahara_nama: "",
     bendahara_nip: "",
     logo_base64: "" as string | null,
+    nominal_default: "10000",
   });
 
   const load = async () => {
@@ -619,6 +717,7 @@ function ProfilForumSection({ isAdmin }: { isAdmin: boolean }) {
         bendahara_nama: p.bendahara_nama || "",
         bendahara_nip: p.bendahara_nip || "",
         logo_base64: p.logo_base64 || null,
+        nominal_default: String(p.nominal_default || 10000),
       });
     } catch (e: unknown) {
       const m = String(e);
@@ -635,6 +734,7 @@ function ProfilForumSection({ isAdmin }: { isAdmin: boolean }) {
           bendahara_nama: "",
           bendahara_nip: "",
           logo_base64: null,
+          nominal_default: 10000,
           updated_at: new Date().toISOString(),
         };
         setProfil(mock);
@@ -649,6 +749,7 @@ function ProfilForumSection({ isAdmin }: { isAdmin: boolean }) {
           bendahara_nama: "",
           bendahara_nip: "",
           logo_base64: null,
+          nominal_default: String(mock.nominal_default),
         });
       } else setErr(m);
     } finally {
@@ -683,6 +784,8 @@ function ProfilForumSection({ isAdmin }: { isAdmin: boolean }) {
     setErr(null);
     setMsg(null);
     try {
+      const nominalNum = parseInt(form.nominal_default);
+      if (!nominalNum || nominalNum <= 0) { setErr("Nominal default harus > 0"); setSaving(false); return; }
       const updated = await invoke<ProfilData>("update_profil", {
         input: {
           nama_forum: form.nama_forum.trim(),
@@ -695,6 +798,7 @@ function ProfilForumSection({ isAdmin }: { isAdmin: boolean }) {
           bendahara_nama: form.bendahara_nama.trim() || null,
           bendahara_nip: form.bendahara_nip.trim() || null,
           logo_base64: form.logo_base64 || null,
+          nominal_default: nominalNum,
         },
       });
       setProfil(updated);
@@ -716,6 +820,7 @@ function ProfilForumSection({ isAdmin }: { isAdmin: boolean }) {
                 bendahara_nama: form.bendahara_nama,
                 bendahara_nip: form.bendahara_nip,
                 logo_base64: form.logo_base64,
+                nominal_default: parseInt(form.nominal_default) || 10000,
               }
             : prev,
         );
@@ -921,6 +1026,25 @@ function ProfilForumSection({ isAdmin }: { isAdmin: boolean }) {
             logo.
           </p>
         </div>
+        <div className="space-y-1.5 border rounded-lg p-3 bg-muted/20">
+          <Label className="flex items-center gap-1.5">
+            <Wallet className="h-3.5 w-3.5" /> Nominal Iuran Default (per bulan)
+          </Label>
+          <div className="flex gap-2 items-center">
+            <Input
+              type="number"
+              value={form.nominal_default}
+              onChange={(e) => setForm((f) => ({ ...f, nominal_default: e.target.value }))}
+              placeholder="10000"
+              disabled={!isAdmin}
+              className="max-w-[180px]"
+            />
+            <span className="text-sm text-muted-foreground">Rp</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Jika diubah 10.000 → 20.000, periode <strong>baru</strong> otomatis 20.000. Periode lama yang sudah dibayar tetap 10.000 (tidak retroaktif). Ubah tiap periode via menu Iuran → <em>Simpan Jumlah Baru</em>.
+          </p>
+        </div>
         <div className="flex gap-2">
           <Button onClick={save} disabled={!isAdmin || saving}>
             {saving && <Loader2 className="h-4 w-4 animate-spin" />}{" "}
@@ -1061,6 +1185,103 @@ function KategoriSection({ isAdmin }: { isAdmin: boolean }) {
             Hanya admin yang bisa menambah jenis keperluan.
           </p>
         )}
+      </CardContent>
+    </Card>
+  );
+}
+
+function SaldoAwalSection({ isAdmin }: { isAdmin: boolean }) {
+  const [kategoriId, setKategoriId] = useState<number | null>(null);
+  const [list, setList] = useState<{ id: number; tanggal: string; nominal: number; keterangan: string }[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [tanggal, setTanggal] = useState(() => new Date().toISOString().slice(0, 10));
+  const [nominal, setNominal] = useState("");
+  const [ket, setKet] = useState("Saldo awal pembukuan manual");
+  const [msg, setMsg] = useState<string | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  const load = async () => {
+    setLoading(true); setErr(null);
+    try {
+      const k = await invoke<{ id: number; nama: string; tipe: string }[]>("get_kategori_list");
+      let id = k.find((x) => x.nama.toLowerCase() === "saldo awal")?.id ?? null;
+      if (!id) {
+        try { const created = await invoke<{ id: number }>("add_kategori", { nama: "Saldo Awal", tipe: "masuk" }); id = created.id; } catch {}
+      }
+      setKategoriId(id);
+      if (id) {
+        const data = await invoke<{ id: number; tanggal: string; nominal: number; keterangan: string }[]>("get_kas_transaksi", { tipe: "masuk", kategoriId: id, dari: null, sampai: null, limit: 100 } as any);
+        setList(data);
+      }
+    } catch (e: unknown) {
+      const m = String(e);
+      if (m.includes("invoke")) {
+        setKategoriId(6);
+        setList([]);
+      } else setErr(m);
+    } finally { setLoading(false); }
+  };
+  useEffect(() => { load(); }, []);
+
+  const add = async () => {
+    if (!kategoriId) return setErr("Kategori Saldo Awal belum siap");
+    const n = parseInt(nominal);
+    if (!n || n <= 0) return setErr("Nominal harus > 0");
+    if (!tanggal) return setErr("Tanggal wajib diisi");
+    if (!ket.trim()) return setErr("Keterangan wajib diisi");
+    setSaving(true); setErr(null); setMsg(null);
+    try {
+      await invoke("add_kas_transaksi", { input: { tipe: "masuk", kategori_id: kategoriId, nominal: n, tanggal, keterangan: ket.trim(), bukti: null, penanggung_jawab: null } });
+      setMsg(`Saldo awal ${formatRupiah(n)} pada ${tanggal} berhasil disimpan. Saldo Dashboard langsung bertambah.`);
+      setNominal(""); load();
+    } catch (e: unknown) {
+      const m = e instanceof Error ? e.message : String(e);
+      if (m.includes("invoke")) { setList((prev) => [...prev, { id: Date.now(), tanggal, nominal: n, keterangan: ket.trim() }]); setMsg("(Pratinjau) Saldo awal dicatat"); setNominal(""); }
+      else setErr(m);
+    } finally { setSaving(false); }
+  };
+  const del = async (id: number) => {
+    if (!confirm("Hapus saldo awal ini? Saldo akan berkurang.")) return;
+    try { await invoke("delete_kas_transaksi", { id }); setList((p) => p.filter((x) => x.id !== id)); setMsg("Saldo awal dihapus"); } catch (e: unknown) {
+      const m = String(e);
+      if (m.includes("invoke")) setList((p) => p.filter((x) => x.id !== id));
+      else setErr(m);
+    }
+  };
+  const total = list.reduce((a, b) => a + b.nominal, 0);
+  return (
+    <Card className="border-amber-200 bg-amber-50/30">
+      <CardHeader>
+        <CardTitle className="text-base flex items-center gap-2">💰 Saldo Awal (Sisa Pembukuan Manual Tahun Lalu)</CardTitle>
+        <p className="text-xs text-muted-foreground">Masukkan sisa kas dari buku manual (mis. 31-Des-2024). Masuk sebagai kas masuk kategori Saldo Awal — langsung menambah saldo Dashboard & Laporan tanpa mengganggu iuran.</p>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {err && <div className="text-sm text-destructive bg-destructive/10 border px-3 py-2 rounded-md">{err}</div>}
+        {msg && <div className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-2 rounded-md">{msg}</div>}
+        {!isAdmin && <p className="text-xs text-amber-700 bg-amber-50 border px-2 py-1 rounded">Hanya admin yang bisa tambah/hapus saldo awal.</p>}
+        <div className="text-sm bg-white border rounded-md p-2">Total Saldo Awal tersimpan: <strong>{formatRupiah(total)}</strong> {list.length > 0 ? `(${list.length} entri)` : "(belum ada — dashboard mulai dari 0)"}</div>
+        {isAdmin && (
+          <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 items-end">
+            <div className="space-y-1"><Label>Tanggal</Label><Input type="date" value={tanggal} onChange={(e) => setTanggal(e.target.value)} /></div>
+            <div className="space-y-1"><Label>Nominal (Rp)</Label><Input type="number" value={nominal} onChange={(e) => setNominal(e.target.value)} placeholder="mis. 1500000" /></div>
+            <div className="space-y-1 sm:col-span-2"><Label>Keterangan</Label><Input value={ket} onChange={(e) => setKet(e.target.value)} placeholder="Saldo awal 31-Des-2024" /></div>
+            <div className="sm:col-span-4 flex gap-2">
+              <Button size="sm" onClick={add} disabled={saving || !isAdmin}>{saving && <Loader2 className="h-4 w-4 animate-spin" />} Simpan Saldo Awal</Button>
+              <Button size="sm" variant="outline" onClick={load}>Muat Ulang</Button>
+            </div>
+            {nominal && <div className="text-xs text-muted-foreground sm:col-span-4">{formatRupiah(parseInt(nominal) || 0)}</div>}
+          </div>
+        )}
+        {loading ? <div className="text-sm text-muted-foreground flex gap-2"><Loader2 className="h-4 w-4 animate-spin" /> Memuat...</div> : list.length === 0 ? <p className="text-sm text-muted-foreground">Belum ada entri saldo awal. Jika ada sisa buku manual tahun lalu, masukkan di atas — contoh: 31-Des-2024, 1.500.000, keterangan &quot;Sisa buku manual 2024&quot;.</p> : (
+          <div className="rounded-md border overflow-hidden bg-white">
+            <Table>
+              <TableHeader><TableRow><TableHead>Tanggal</TableHead><TableHead>Keterangan</TableHead><TableHead className="text-right">Nominal</TableHead><TableHead className="text-right">Aksi</TableHead></TableRow></TableHeader>
+              <TableBody>{list.map((r) => (<TableRow key={r.id}><TableCell className="text-xs">{r.tanggal}</TableCell><TableCell className="text-sm">{r.keterangan}</TableCell><TableCell className="text-right font-medium text-emerald-600">{formatRupiah(r.nominal)}</TableCell><TableCell className="text-right"><Button variant="ghost" size="sm" className="text-destructive" disabled={!isAdmin} onClick={() => del(r.id)}><Trash2 className="h-3.5 w-3.5" /></Button></TableCell></TableRow>))}</TableBody>
+            </Table>
+          </div>
+        )}
+        <p className="text-xs text-muted-foreground">Skenario: sisa manual 2024 Rp 1.500.000 → isi 2024-12-31, 1500000, keterangan &quot;Saldo awal 2024&quot; → Simpan → Dashboard Saldo langsung +1,5jt. Laporan filter Dari 2024-12-31 akan ikut. Jika nominal iuran berubah 10k→20k, saldo awal tidak terpengaruh.</p>
       </CardContent>
     </Card>
   );

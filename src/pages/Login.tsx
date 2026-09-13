@@ -139,7 +139,7 @@ export function Login() {
 
       {/* Developer Credit Footer */}
       <div className="mt-6 text-center text-xs text-white/70 space-y-1">
-        <div>{namaForum} &bull; v0.1.0</div>
+        <div>{namaForum} &bull; v1.0.0</div>
         <div className="text-white/90 font-medium">
           Dikembangkan oleh{" "}
           <span className="underline decoration-white/40 underline-offset-2">

@@ -7,6 +7,7 @@ import { Printer, Download, RefreshCw, Loader2 } from "lucide-react";
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import * as XLSX from "xlsx";
 import { saveXlsx } from "@/lib/fileSave";
+import { checklistFileName } from "@/lib/fileName";
 
 type CheckRow = {
   id: number;
@@ -200,7 +201,7 @@ export function Checklist() {
       </div>
     </body></html>`;
 
-    // Tauri WebView blokir window.open — pakai iframe hidden (work di browser & Tauri)
+     // Tauri WebView blokir window.open — pakai iframe hidden (work di browser & Tauri)
     const iframe = document.createElement("iframe");
     iframe.style.position = "fixed";
     iframe.style.right = "0";
@@ -211,11 +212,12 @@ export function Checklist() {
     document.body.appendChild(iframe);
     const iDoc = iframe.contentWindow?.document;
     if (!iDoc) {
-      // fallback ekstrem: simpan HTML via dialog
+      // fallback ekstrem: simpan HTML via dialog — nama otomatis tapi tetap bisa rename
       try {
         const { save } = await import("@tauri-apps/plugin-dialog");
         const { writeTextFile } = await import("@tauri-apps/plugin-fs");
-        const p = await save({ defaultPath: `daftar-iuran-${tahun}.html`, filters: [{ name: "HTML", extensions: ["html"] }] });
+        const htmlName = checklistFileName(profil?.nama_forum || "Forum PPPK", tahun, "html");
+        const p = await save({ defaultPath: htmlName, filters: [{ name: "HTML", extensions: ["html"] }] });
         if (p) { await writeTextFile(p, html); alert(`HTML disimpan di ${p} — buka di browser lalu Cetak (Ctrl+P).`); }
       } catch { alert("Gagal membuka cetak. Coba lagi."); }
       iframe.remove();
@@ -275,7 +277,7 @@ export function Checklist() {
     ];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, `Iuran ${tahun}`);
-    await saveXlsx(wb, `daftar-iuran-${tahun}.xlsx`);
+    await saveXlsx(wb, checklistFileName(namaForum, tahun, "xlsx"));
   };
 
   return (

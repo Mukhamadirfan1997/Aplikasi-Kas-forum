@@ -10,7 +10,7 @@
 endobj
 4 0 obj
 <<
-/Length 3969
+/Length 3963
 >>
 stream
 0.5670000000000001 w
@@ -108,7 +108,7 @@ BT
 10.3499999999999996 TL
 0.118 0.161 0.231 rg
 235.275590551181125 350.0789763779526993 Td
-(:  v0.1.0 \(Stabil\)) Tj
+(:  v1.0.0 \(Stabil\)) Tj
 ET
 BT
 /F1 9 Tf
@@ -122,7 +122,7 @@ BT
 10.3499999999999996 TL
 0.118 0.161 0.231 rg
 235.275590551181125 328.8191338582676053 Td
-(:  Tauri 2 • Rust • React • SQLite Bundled) Tj
+(:  Aplikasi Desktop Offline • SQLite) Tj
 ET
 BT
 /F1 9 Tf
@@ -796,7 +796,7 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 476.4163779527557949 816.3781889763779418 Td
-(v0.1.0 • IrfanDev97) Tj
+(v1.0.0 • IrfanDev97) Tj
 ET
 0.89 0.91 0.94 RG
 1.1338582677165356 w
@@ -962,7 +962,7 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 476.4163779527557949 816.3781889763779418 Td
-(v0.1.0 • IrfanDev97) Tj
+(v1.0.0 • IrfanDev97) Tj
 ET
 0.89 0.91 0.94 RG
 1.1338582677165356 w
@@ -1342,7 +1342,7 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 476.4163779527557949 816.3781889763779418 Td
-(v0.1.0 • IrfanDev97) Tj
+(v1.0.0 • IrfanDev97) Tj
 ET
 0.89 0.91 0.94 RG
 1.1338582677165356 w
@@ -1502,7 +1502,7 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 476.4163779527557949 816.3781889763779418 Td
-(v0.1.0 • IrfanDev97) Tj
+(v1.0.0 • IrfanDev97) Tj
 ET
 0.89 0.91 0.94 RG
 1.1338582677165356 w
@@ -1639,7 +1639,7 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 476.4163779527557949 816.3781889763779418 Td
-(v0.1.0 • IrfanDev97) Tj
+(v1.0.0 • IrfanDev97) Tj
 ET
 0.89 0.91 0.94 RG
 1.1338582677165356 w
@@ -1672,7 +1672,7 @@ endobj
 endobj
 16 0 obj
 <<
-/Length 5852
+/Length 6223
 >>
 stream
 1.1338582677165356 w
@@ -1708,19 +1708,19 @@ BT
 10.3499999999999996 TL
 0.118 0.161 0.231 rg
 51.0236220472441033 731.3388188976377933 Td
-(Setiap rupiah yang dikeluarkan dari kas forum wajib dicatat secara transparan:) Tj
+(Setiap rupiah yang dikeluarkan/dimasukkan dari kas forum wajib dicatat secara transparan:) Tj
 T* () Tj
 T* (Langkah Mencatat Pengeluaran Baru:) Tj
-T* (1. Buka menu 'Kas' lalu klik tab 'Pengeluaran' \(atau buka menu transaksi pengeluaran\).) Tj
-T* (2. Klik tombol '+ Tambah Pengeluaran' di bagian atas.) Tj
-T* (3. Isi data pengeluaran:) Tj
-T* (   • Jenis Keperluan/Kategori: Pilih dari kategori \(misal: Konsumsi Rapat, ATK, Transport, Kegiatan\).) Tj
-T* (   • Tanggal Pengeluaran: Pilih tanggal transaksi.) Tj
-T* (   • Nominal: Masukkan jumlah uang keluar dalam format angka \(misal: 150000\).) Tj
-T* (   • Keterangan Rinci: Jelaskan keperluan belanja \(misal: Pembelian snack rapat 30 porsi\).) Tj
-T* (   • Penanggung Jawab: Nama pengurus atau anggota yang membelanjakan.) Tj
-T* (   • Upload Bukti/Nota*: Wajib mengunggah foto nota, kuitansi, atau struk fisik belanja.) Tj
-T* (4. Klik 'Simpan'. Saldo kas riil akan langsung berkurang.) Tj
+T* (1. Buka menu 'Kas' lalu klik tab 'Pengeluaran & Pemasukan' \(atau transaksi\).) Tj
+T* (2. Klik tombol '+ Tambah Pengeluaran' atau '+ Tambah Pemasukan' di bagian atas.) Tj
+T* (3. Pilih Jenis Transaksi: Masuk \(sumbangan/bonus selain iuran\) atau Keluar, lalu isi:) Tj
+T* (       •   J e n i s   K e p e r l u a n / K a t e g o r i :   P i l i h   d a r i   k a t e g o r i   \( b u a t   b a r u   d i   P e n g a t u r a n  !’   J e n i s   K e p e r l u a n   t i p e   M a s u k / K e l u a r   j i k a   b e l u m   a d a \) .) Tj
+T* (   • Tanggal: Pilih tanggal transaksi.) Tj
+T* (   • Nominal: Masukkan jumlah.) Tj
+T* (   • Keterangan Rinci: Jelaskan keperluan \(mis. Sumbangan alumni, Pembelian snack rapat\).) Tj
+T* (   • Penanggung Jawab: Nama pengurus \(opsional\).) Tj
+T* (   • Upload Bukti: Wajib untuk Keluar, opsional untuk Masuk.) Tj
+T* ( 4 .   K l i k   ' S i m p a n ' .   S a l d o   k a s   r i i l   a k a n   l a n g s u n g   b e r t a m b a h / b e r k u r a n g .   I u r a n   t e t a p   v i a   t a b   K a s   M a s u k   —   I u r a n ,   s a l d o   a w a l   v i a   P e n g a t u r a n  !’   S a l d o   A w a l .) Tj
 ET
 1. 0.95 0.78 rg
 0.85 0.47 0.02 RG
@@ -1807,7 +1807,7 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 476.4163779527557949 816.3781889763779418 Td
-(v0.1.0 • IrfanDev97) Tj
+(v1.0.0 • IrfanDev97) Tj
 ET
 0.89 0.91 0.94 RG
 1.1338582677165356 w
@@ -1840,7 +1840,7 @@ endobj
 endobj
 18 0 obj
 <<
-/Length 5734
+/Length 6791
 >>
 stream
 1.1338582677165356 w
@@ -1916,6 +1916,16 @@ BT
 T* (• Admin dapat membuat akun baru untuk bendahara pembantu atau pengawas.) Tj
 T* (• Pengguna default admin tidak boleh dihapus jika hanya tersisa satu akun.) Tj
 T* () Tj
+T* ( A 2 .   N o m i n a l   I u r a n   D e f a u l t   \( 1 0 . 0 0 0  !’   2 0 . 0 0 0 \) :) Tj
+T* ( •   B u k a   P e n g a t u r a n  !’   P r o f i l   F o r u m  !’   N o m i n a l   I u r a n   D e f a u l t .   U b a h   1 0 0 0 0   j a d i   2 0 0 0 0   l a l u   S i m p a n .) Tj
+T* (• Periode/bulan BARU otomatis 20.000. Periode lama yang sudah ada pembayaran tetap 10.000 \(tidak retroaktif\).) Tj
+T* ( •   U n t u k   u b a h   b u l a n   y a n g   s u d a h   a d a :   I u r a n  !’   p i l i h   B u l a n + T a h u n  !’   S i m p a n   J u m l a h   B a r u .) Tj
+T* () Tj
+T* (A3. Saldo Awal — Sisa Buku Manual Tahun Lalu:) Tj
+T* ( •   P e n g a t u r a n  !’   S a l d o   A w a l  !’   i s i   T a n g g a l   \( m i s .   2 0 2 4 - 1 2 - 3 1 \) ,   N o m i n a l   s i s a ,   K e t e r a n g a n   ' S a l d o   a w a l   2 0 2 4 '  !’   S i m p a n .) Tj
+T* (• Tercatat sebagai kas masuk kategori Saldo Awal, langsung menambah saldo Dashboard & Laporan.) Tj
+T* (• Bisa dihapus jika salah. Tidak mengganggu data iuran.) Tj
+T* () Tj
 T* (B. Prosedur Pencadangan Data \(Backup\):) Tj
 T* (1. Buka menu 'Pengaturan' lalu cari bagian 'Cadangan Data'.) Tj
 T* (2. Klik 'Buat Cadangan Sekarang'.) Tj
@@ -1975,7 +1985,7 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 476.4163779527557949 816.3781889763779418 Td
-(v0.1.0 • IrfanDev97) Tj
+(v1.0.0 • IrfanDev97) Tj
 ET
 0.89 0.91 0.94 RG
 1.1338582677165356 w
@@ -2008,7 +2018,7 @@ endobj
 endobj
 20 0 obj
 <<
-/Length 7978
+/Length 9687
 >>
 stream
 1.1338582677165356 w
@@ -2237,6 +2247,63 @@ BT
 (Ya. Aplikasi telah mendukung antarmuka responsif full-width dengan sidebar fleksibel yang) Tj
 T* (nyaman di layar 1366x768 hingga 1920x1080.) Tj
 ET
+1. g
+0.78 G
+0.2834645669291339 w
+1. g
+51.0236220472441033 541.1638188976378387 155.9055118110236435 -37.5999999999999943 re
+B
+BT
+/F2 8 Tf
+9.1999999999999993 TL
+0.118 0.161 0.231 rg
+56.0236220472441033 529.3638188976378842 Td
+(Sisa saldo buku manual tahun lalu) Tj
+T* (dimasukkan bagaimana?) Tj
+ET
+1. g
+0.78 G
+0.2834645669291339 w
+1. g
+206.9291338582677326 541.1638188976378387 337.3272440944880941 -37.5999999999999943 re
+B
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+0.118 0.161 0.231 rg
+211.9291338582677326 529.3638188976378842 Td
+( B u k a   P e n g a t u r a n  !’   S a l d o   A w a l  !’   i s i   T a n g g a l   2 0 2 4 - 1 2 - 3 1 ,   N o m i n a l   s i s a ,   K e t e r a n g a n   " S a l d o) Tj
+T* ( a w a l   2 0 2 4 "  !’   S i m p a n .   J a d i   k a s   m a s u k   k a t e g o r i   S a l d o   A w a l ,   l a n g s u n g   m e n a m b a h   s a l d o .   B i s a) Tj
+T* (dihapus jika salah.) Tj
+ET
+1. g
+0.78 G
+0.2834645669291339 w
+1. g
+51.0236220472441033 503.563818897637816 155.9055118110236435 -28.399999999999995 re
+B
+BT
+/F2 8 Tf
+9.1999999999999993 TL
+0.118 0.161 0.231 rg
+56.0236220472441033 491.7638188976378615 Td
+( J i k a   n o m i n a l   i u r a n   b e r u b a h   1 0 . 0 0 0  !’) Tj
+T* (20.000 apa yang terjadi?) Tj
+ET
+1. g
+0.78 G
+0.2834645669291339 w
+1. g
+206.9291338582677326 503.563818897637816 337.3272440944880941 -28.399999999999995 re
+B
+BT
+/F1 8 Tf
+9.1999999999999993 TL
+0.118 0.161 0.231 rg
+211.9291338582677326 491.7638188976378615 Td
+(Hanya periode/bulan baru yang 20.000. Periode lama yang sudah dibayar tetap 10.000 \(tidak) Tj
+T* ( r e t r o a k t i f \) .   A t u r   N o m i n a l   D e f a u l t   d i   P e n g a t u r a n  !’   P r o f i l   F o r u m .) Tj
+ET
 0.09 0.64 0.29 RG
 1.1338582677165356 w
 0.78 G
@@ -2247,43 +2314,43 @@ ET
 1.1338582677165356 w
 0.97 0.98 0.99 rg
 0.89 0.91 0.94 RG
-56.6929133858267775 507.1480708661417793 m
-538.5870866141731312 507.1480708661417793 l
-541.7181497628201896 507.1480708661417793 544.2563779527558836 504.6098426762060853 544.2563779527558836 501.4787795275590838 c
-544.2563779527558836 416.4394094488189353 l
-544.2563779527558836 413.3083463001719338 541.1253148041088252 410.7701181102362398 538.5870866141731312 410.7701181102362398 c
-56.6929133858267775 410.7701181102362398 l
-53.5618502371797618 410.7701181102362398 51.0236220472441033 413.9011812588832413 51.0236220472441033 416.4394094488189353 c
-51.0236220472441033 501.4787795275590838 l
-51.0236220472441033 504.6098426762060853 54.1546851958911191 507.1480708661417793 56.6929133858267775 507.1480708661417793 c
+56.6929133858267775 441.1480708661417793 m
+538.5870866141731312 441.1480708661417793 l
+541.7181497628201896 441.1480708661417793 544.2563779527558836 438.6098426762060853 544.2563779527558836 435.4787795275590838 c
+544.2563779527558836 350.4394094488189353 l
+544.2563779527558836 347.3083463001719338 541.1253148041088252 344.7701181102362398 538.5870866141731312 344.7701181102362398 c
+56.6929133858267775 344.7701181102362398 l
+53.5618502371797618 344.7701181102362398 51.0236220472441033 347.9011812588832413 51.0236220472441033 350.4394094488189353 c
+51.0236220472441033 435.4787795275590838 l
+51.0236220472441033 438.6098426762060853 54.1546851958911191 441.1480708661417793 56.6929133858267775 441.1480708661417793 c
 h
 B
 BT
 /F2 9.5 Tf
 10.9249999999999989 TL
 0.4 0.494 0.918 rg
-68.031496062992133 487.3055511811023734 Td
+68.031496062992133 421.3055511811023734 Td
 (PENGEMBANG APLIKASI & DUKUNGAN TEKNIS) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.118 0.161 0.231 rg
-68.031496062992133 467.4630314960630244 Td
+68.031496062992133 401.4630314960630244 Td
 (Aplikasi ini dikembangkan dengan dedikasi penuh untuk kemajuan tata kelola keuangan Forum PPPK.) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.118 0.161 0.231 rg
-68.031496062992133 450.4551574803149947 Td
-(Karya Pengembang: IrfanDev97 | Versi 0.1.0 | Rilis September 2026) Tj
+68.031496062992133 384.4551574803149947 Td
+(Karya Pengembang: IrfanDev97 | Versi 1.0.0 | Rilis September 2026) Tj
 ET
 BT
 /F1 8.5 Tf
 9.7749999999999986 TL
 0.118 0.161 0.231 rg
-68.031496062992133 433.447283464566965 Td
+68.031496062992133 367.447283464566965 Td
 (Untuk saran pengembangan fitur lanjutan, silakan sampaikan melalui pengurus forum terkait.) Tj
 ET
 0.89 0.91 0.94 RG
@@ -2303,7 +2370,7 @@ BT
 9.1999999999999993 TL
 0.392 0.455 0.545 rg
 476.4163779527557949 816.3781889763779418 Td
-(v0.1.0 • IrfanDev97) Tj
+(v1.0.0 • IrfanDev97) Tj
 ET
 0.89 0.91 0.94 RG
 1.1338582677165356 w
@@ -2511,7 +2578,7 @@ endobj
 36 0 obj
 <<
 /Producer (jsPDF 4.2.1)
-/CreationDate (D:20260911214730+07'00')
+/CreationDate (D:20260913200621+07'00')
 >>
 endobj
 37 0 obj
@@ -2525,50 +2592,50 @@ endobj
 xref
 0 38
 0000000000 65535 f 
-0000063935 00000 n 
-0003211693 00000 n 
+0000067066 00000 n 
+0003214824 00000 n 
 0000000015 00000 n 
 0000000152 00000 n 
-0000004173 00000 n 
-0000004310 00000 n 
-0000018196 00000 n 
-0000018333 00000 n 
-0000024199 00000 n 
-0000024337 00000 n 
-0000032853 00000 n 
-0000032992 00000 n 
-0000038859 00000 n 
-0000038998 00000 n 
-0000043795 00000 n 
-0000043934 00000 n 
-0000049839 00000 n 
-0000049978 00000 n 
-0000055765 00000 n 
-0000055904 00000 n 
-0000064045 00000 n 
-0000064171 00000 n 
-0000064302 00000 n 
-0000064436 00000 n 
-0000064574 00000 n 
-0000064698 00000 n 
-0000064827 00000 n 
-0000064959 00000 n 
-0000065095 00000 n 
-0000065223 00000 n 
-0000065350 00000 n 
-0000065479 00000 n 
-0000065612 00000 n 
-0000065714 00000 n 
-0000065810 00000 n 
-0003211957 00000 n 
-0003212043 00000 n 
+0000004167 00000 n 
+0000004304 00000 n 
+0000018190 00000 n 
+0000018327 00000 n 
+0000024193 00000 n 
+0000024331 00000 n 
+0000032847 00000 n 
+0000032986 00000 n 
+0000038853 00000 n 
+0000038992 00000 n 
+0000043789 00000 n 
+0000043928 00000 n 
+0000050204 00000 n 
+0000050343 00000 n 
+0000057187 00000 n 
+0000057326 00000 n 
+0000067176 00000 n 
+0000067302 00000 n 
+0000067433 00000 n 
+0000067567 00000 n 
+0000067705 00000 n 
+0000067829 00000 n 
+0000067958 00000 n 
+0000068090 00000 n 
+0000068226 00000 n 
+0000068354 00000 n 
+0000068481 00000 n 
+0000068610 00000 n 
+0000068743 00000 n 
+0000068845 00000 n 
+0000068941 00000 n 
+0003215088 00000 n 
+0003215174 00000 n 
 trailer
 <<
 /Size 38
 /Root 37 0 R
 /Info 36 0 R
-/ID [ <4855EDCA2C6A5A5DD7B62F2F6111FEAF> <4855EDCA2C6A5A5DD7B62F2F6111FEAF> ]
+/ID [ <7426BC4DBC298019248A5A7F5393C1D5> <7426BC4DBC298019248A5A7F5393C1D5> ]
 >>
 startxref
-3212147
+3215278
 %%EOF

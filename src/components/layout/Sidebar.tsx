@@ -136,7 +136,7 @@ export function Sidebar({
           <LogOut className="h-4 w-4" /> Keluar
         </Button>
         <div className="text-[10px] text-white/60 text-center px-1">
-          v0.1.0 &bull;{" "}
+          v1.0.0 &bull;{" "}
           <span className="text-white/80 font-medium">IrfanDev97</span>
         </div>
       </div>

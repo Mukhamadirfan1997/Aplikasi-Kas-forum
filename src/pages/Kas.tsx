@@ -117,7 +117,9 @@ function KasMasukForm() {
     } finally { setLoading(false); }
   };
 
-  const totalNominal = 10000 * bulanChecks.filter(Boolean).length; // default, Rust pakai per-periode nominal_wajib
+  const [nominalDefault, setNominalDefault] = useState(10000);
+  useEffect(() => { (async () => { try { const p:any = await invoke("get_profil"); if(p?.nominal_default) setNominalDefault(p.nominal_default); } catch {} })(); }, []);
+  const totalNominal = nominalDefault * bulanChecks.filter(Boolean).length; // Rust pakai per-periode nominal_wajib
   const [bulkEnabled, setBulkEnabled] = useState(() => localStorage.getItem("kas_bulk_enabled") === "1");
   useEffect(() => {
     const h = () => setBulkEnabled(localStorage.getItem("kas_bulk_enabled") === "1");

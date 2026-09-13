@@ -223,10 +223,15 @@ export function Transaksi() {
     const nom = parseInt(form.nominal);
     if (!form.keterangan.trim()) return setFormError("Keterangan harus diisi");
     if (!nom || nom <= 0) return setFormError("Jumlah uang harus lebih dari 0");
-    if (!form.kategori_id) return setFormError("Pilih jenis pengeluaran");
-    if (!buktiPreview) return setFormError("Wajib upload foto nota / bukti");
-    if (saldo !== null && nom > saldo)
+    if (!form.kategori_id) return setFormError(form.tipe === "keluar" ? "Pilih jenis pengeluaran" : "Pilih jenis pemasukan");
+    if (form.tipe === "keluar" && !buktiPreview) return setFormError("Wajib upload foto nota / bukti untuk pengeluaran");
+    if (form.tipe === "keluar" && saldo !== null && nom > saldo)
       return setFormError(`Uang kas tidak cukup. Sisa: ${formatRupiah(saldo)}`);
+    if (form.tipe === "masuk") {
+      const katName = kategoriList.find((k) => String(k.id) === form.kategori_id)?.nama?.toLowerCase() ?? "";
+      if (katName.includes("iuran")) return setFormError("⛔ Iuran anggota DILARANG di sini! Gunakan Kas → Iuran agar checklist ✓.");
+      if (!confirm("⚠️ Yakin ini BUKAN iuran anggota?\n\n• Iuran → WAJIB via Kas → Iuran\n• Saldo awal → Pengaturan → Saldo Awal\n\nForm ini HANYA untuk pemasukan umum (sumbangan/hibah/bonus).\nLanjutkan simpan pemasukan?")) return;
+    }
 
     setSubmitting(true);
     try {
@@ -317,7 +322,8 @@ export function Transaksi() {
   };
 
   const kategoriKeluar = kategoriList.filter((k) => k.tipe === "keluar");
-  void kategoriKeluar;
+  const kategoriMasuk = kategoriList.filter((k) => k.tipe === "masuk" && k.nama !== "Saldo Awal" && k.nama !== "Iuran Anggota");
+  const kategoriOptions = form.tipe === "masuk" ? kategoriMasuk : kategoriKeluar;
 
   return (
     <div className="space-y-5">
@@ -327,7 +333,7 @@ export function Transaksi() {
             <Wallet className="h-6 w-6" /> Pengeluaran & Pemasukan
           </h2>
           <p className="text-sm text-white/80">
-            Catat uang keluar untuk belanja atau kegiatan.
+            Catat uang masuk selain iuran (sumbangan, bonus) & uang keluar.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -337,14 +343,34 @@ export function Transaksi() {
               {saldo === null ? "—" : formatRupiah(saldo)}
             </div>
           </Card>
-          <Button
-            onClick={() => setOpen(true)}
-            className="bg-white text-[#667eea] hover:bg-white/90 shadow"
-          >
-            <Plus className="h-4 w-4" /> Tambah Pengeluaran
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => { setForm((f) => ({ ...f, tipe: "masuk", kategori_id: "" })); setBuktiPreview(null); setBuktiName(null); setFormError(null); setOpen(true); }}
+              className="bg-emerald-500 hover:bg-emerald-600 text-white shadow"
+              title="Hanya untuk pemasukan BUKAN iuran. Iuran via Kas → Iuran"
+            >
+              <ArrowUpCircle className="h-4 w-4" /> Tambah Pemasukan
+            </Button>
+            <Button
+              onClick={() => { setForm((f) => ({ ...f, tipe: "keluar", kategori_id: "" })); setBuktiPreview(null); setBuktiName(null); setOpen(true); }}
+              className="bg-white text-[#667eea] hover:bg-white/90 shadow"
+            >
+              <Plus className="h-4 w-4" /> Tambah Pengeluaran
+            </Button>
+          </div>
         </div>
       </div>
+
+      <Card className="border-amber-300 bg-amber-50">
+        <CardContent className="py-3 text-sm space-y-1">
+          <div className="font-semibold text-amber-800">⚠️ Perhatian — Jangan salah input!</div>
+          <div className="text-amber-900/80 text-xs leading-relaxed">
+            • <strong>Iuran anggota</strong> → WAJIB via <strong>Kas → Iuran</strong> (agar checklist & laporan iuran otomatis centang). Jika iuran diinput di sini, <strong>tidak akan terhitung sebagai iuran</strong>.<br/>
+            • <strong>Saldo awal tahun lalu</strong> → via <strong>Pengaturan → Saldo Awal</strong> (kategori Saldo Awal khusus).<br/>
+            • <strong>Form ini (Pemasukan)</strong> hanya untuk <strong>sumbangan, hibah, bonus, pendapatan lain selain iuran</strong> + pengeluaran umum.
+          </div>
+        </CardContent>
+      </Card>
 
       {error && (
         <div className="bg-destructive/10 border border-destructive/20 text-destructive text-sm px-3 py-2 rounded-md">
@@ -419,7 +445,7 @@ export function Transaksi() {
                   <TableRow>
                     <TableHead>Tanggal</TableHead>
                     <TableHead>Jenis</TableHead>
-                    <TableHead>Jenis Pengeluaran</TableHead>
+                    <TableHead>Kategori</TableHead>
                     <TableHead>Keperluan</TableHead>
                     <TableHead>Nama Petugas</TableHead>
                     <TableHead>Foto Nota</TableHead>
@@ -525,9 +551,25 @@ export function Transaksi() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Tambah Uang Keluar</DialogTitle>
+            <DialogTitle>{form.tipe === "masuk" ? "Tambah Pemasukan (Selain Iuran)" : "Tambah Uang Keluar"}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-1">
+              <Label>Jenis Transaksi *</Label>
+              <select value={form.tipe} onChange={(e) => setForm((f) => ({ ...f, tipe: e.target.value as any, kategori_id: "" }))} className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm">
+                <option value="masuk">Pemasukan (sumbangan, bonus, dll — selain iuran)</option>
+                <option value="keluar">Pengeluaran</option>
+              </select>
+              {form.tipe === "masuk" ? (
+                <div className="rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-800 space-y-1">
+                  <div className="font-semibold">⛔ DILARANG input iuran di sini!</div>
+                  <div>Iuran anggota <strong>WAJIB</strong> via <strong>Kas → Iuran</strong> agar checklist otomatis ✓ dan masuk laporan iuran. Form ini <strong>hanya</strong> untuk sumbangan/hibah/bonus/lainnya. Jika iuran diinput di sini, anggota tetap dianggap <strong>Belum Lunas</strong>.</div>
+                  <div>Saldo awal tahun lalu → <strong>Pengaturan → Saldo Awal</strong>.</div>
+                </div>
+              ) : (
+                <p className="text-xs text-muted-foreground">Iuran anggota tidak di sini — lihat Kas → Iuran. Pengeluaran akan mengurangi saldo (dicek otomatis).</p>
+              )}
+            </div>
             <div className="space-y-1">
               <Label>Tanggal</Label>
               <Input
@@ -539,7 +581,7 @@ export function Transaksi() {
               />
             </div>
             <div className="space-y-1">
-              <Label>Jenis Pengeluaran *</Label>
+              <Label>{form.tipe === "masuk" ? "Jenis Pemasukan *" : "Jenis Pengeluaran *"}</Label>
               <select
                 value={form.kategori_id}
                 onChange={(e) =>
@@ -547,13 +589,14 @@ export function Transaksi() {
                 }
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm"
               >
-                <option value="">— Pilih keperluan —</option>
-                {kategoriKeluar.map((k) => (
+                <option value="">— Pilih —</option>
+                {kategoriOptions.map((k) => (
                   <option key={k.id} value={k.id}>
                     {k.nama}
                   </option>
                 ))}
               </select>
+              {form.tipe==="masuk" && kategoriMasuk.length===0 && <p className="text-xs text-amber-600">Belum ada kategori pemasukan. Tambah di Pengaturan → Jenis Keperluan (tipe Masuk).</p>}
             </div>
             <div className="space-y-1">
               <Label>Jumlah Uang *</Label>
@@ -611,7 +654,7 @@ export function Transaksi() {
               </p>
             </div>
             <div className="space-y-1">
-              <Label>Foto Nota / Bukti *</Label>
+              <Label>Foto Nota / Bukti {form.tipe === "keluar" ? "*" : "(opsional untuk pemasukan)"}</Label>
               <Input type="file" accept="image/*,.pdf" onChange={onBukti} />
               {buktiName && (
                 <div className="flex gap-2 items-center text-xs">
@@ -626,7 +669,7 @@ export function Transaksi() {
                 </div>
               )}
               <p className="text-xs text-muted-foreground">
-                Wajib upload foto nota atau bukti transfer.
+                {form.tipe === "keluar" ? "Wajib upload foto nota atau bukti transfer." : "Opsional — upload jika ada bukti sumbangan."}
               </p>
             </div>
             {saldo !== null && (

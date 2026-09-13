@@ -134,8 +134,12 @@ const SECTIONS: Section[] = [
         desc: "Klik tab Pengeluaran → klik Tambah Transaksi → pilih Keluar → isi kategori, tanggal, nominal, keterangan → Simpan. Sistem cegah saldo minus.",
       },
       {
+        title: "Tambah pemasukan selain iuran",
+        desc: "Buka menu Kas → tab Pengeluaran & Pemasukan → klik Tambah Pemasukan → pilih jenis pemasukan (mis. Sumbangan, Bonus) → isi tanggal, nominal, keterangan → Simpan. Atau tambah kategori baru dulu di Pengaturan → Jenis Keperluan tipe Masuk.",
+      },
+      {
         title: "Hapus transaksi",
-        desc: "Hanya transaksi pengeluaran yang bisa dihapus manual. Transaksi iuran hanya bisa dibatalkan dari halaman Checklist/Iuran.",
+        desc: "Hanya transaksi pengeluaran & pemasukan umum yang bisa dihapus manual. Transaksi iuran hanya bisa dibatalkan dari halaman Checklist/Iuran.",
       },
     ],
   },
@@ -238,8 +242,16 @@ const SECTIONS: Section[] = [
         desc: "Klik Tambah Pengguna → isi nama, username, kata sandi, pilih peran → Simpan. Hapus pengguna dengan ikon tempat sampah (minimal 1 pengguna harus ada).",
       },
       {
+        title: "Nominal Iuran Default",
+        desc: "Di Pengaturan → Profil Forum, isi Nominal Iuran Default (mis. 10000 atau 20000). Nilai ini otomatis dipakai untuk semua periode/bulan baru. Perubahan tidak mengubah nominal periode lama yang sudah ada pembayaran (tidak retroaktif). Untuk ubah nominal bulan yang sudah ada, buka Iuran → pilih Bulan+Tahun → Simpan Jumlah Baru.",
+      },
+      {
         title: "Jenis Keperluan (Kategori)",
         desc: "Tambah kategori baru untuk keperluan pengeluaran (mis. Transport, Sewa Gedung). Pilih tipe Masuk atau Keluar. Kategori 'Iuran Anggota' tidak bisa dihapus.",
+      },
+      {
+        title: "Saldo Awal — Sisa Buku Manual Tahun Lalu",
+        desc: "Jika ada sisa kas dari pembukuan manual tahun lalu, buka Pengaturan → Saldo Awal → isi Tanggal (mis. 2024-12-31), Nominal (mis. 1500000), Keterangan 'Saldo awal 2024' → Simpan. Otomatis jadi kas masuk kategori Saldo Awal dan menambah Saldo Dashboard. Tidak mengganggu data iuran, tidak retroaktif. Bisa dihapus jika salah.",
       },
       {
         title: "Cadangkan Data",
@@ -289,6 +301,14 @@ const FAQ = [
   {
     q: "Pindah laptop — bawa data lama bagaimana?",
     a: "Di laptop lama: Pengaturan → Cadangkan Data → Buat Cadangan Sekarang → copy file kas-YYYY-MM-DD_HHMMSS.db dari folder backup ke flashdisk. Di laptop baru: instal aplikasi → login default admin/admin123 → buka Pengaturan → Cadangkan Data → Pulihkan dari File → pilih file .db → konfirmasi PULIHKAN → tutup & buka ulang aplikasi. Semua anggota, iuran, kas, profil forum + NIP + logo, dan riwayat ikut pulih. Login selanjutnya pakai akun dari backup.",
+  },
+  {
+    q: "Sisa saldo buku manual tahun lalu dimasukkan bagaimana?",
+    a: "Buka Pengaturan → Saldo Awal → isi Tanggal 2024-12-31, Nominal sisa (mis. 1500000), Keterangan 'Saldo awal 2024' → Simpan. Akan jadi transaksi masuk kategori Saldo Awal, langsung menambah saldo. Laporan dan Dashboard otomatis terhitung. Jika salah, hapus di daftar Saldo Awal.",
+  },
+  {
+    q: "Jika nominal iuran berubah 10.000 → 20.000 apa yang terjadi?",
+    a: "Nominal baru hanya berlaku untuk periode/bulan baru. Periode lama yang sudah dibayar tetap 10.000 (tidak retroaktif). Atur Nominal Default di Pengaturan → Profil Forum agar periode baru otomatis 20.000, atau ubah manual per bulan di Iuran → Simpan Jumlah Baru.",
   },
 ];
 
@@ -519,8 +539,7 @@ export function Petunjuk() {
             Informasi Aplikasi
           </div>
           <div>
-            Versi: <strong>0.1.0</strong> &bull; Dibangun dengan: Tauri 2 +
-            React + TypeScript + SQLite
+            Versi: <strong>1.0.0</strong> &bull; Aplikasi Desktop Offline
           </div>
           <div>
             Pengembang: <strong className="text-slate-800">IrfanDev97</strong>

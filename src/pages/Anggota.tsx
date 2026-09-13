@@ -11,6 +11,7 @@ import { Search, Plus, Pencil, UserX, Users, Loader2, RefreshCw, Upload, Downloa
 import { PaginationControls } from "@/components/ui/pagination-controls";
 import * as XLSX from "xlsx";
 import { saveXlsx } from "@/lib/fileSave";
+import { templateAnggotaFileName } from "@/lib/fileName";
 
 type Anggota = {
   id: number;
@@ -254,7 +255,9 @@ export function Anggota() {
     ws["!cols"] = [{ wch: 20 }, { wch: 20 }, { wch: 18 }, { wch: 15 }];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Anggota");
-    await saveXlsx(wb, "template-anggota.xlsx");
+    let namaForum: string | null = null;
+    try { const p: any = await invoke("get_profil"); namaForum = p?.nama_forum ?? null; } catch {}
+    await saveXlsx(wb, templateAnggotaFileName(namaForum));
   };
 
   const onImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
